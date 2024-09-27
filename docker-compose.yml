@@ -10,6 +10,12 @@ services:
       - "3000:80"  # Maps port 80 in the container to port 3000 on the host
     volumes:
       - ./frontend:/usr/share/nginx/html  # Mounts the frontend directory to the container
+    networks:
+      - franci-app  # Connect the frontend service to the franci-app network
+
+# Define the networks
+networks:
+  franci-app:  # Declare the franci-app network
 
 # Volumes for persistent data (if needed)
 volumes:
