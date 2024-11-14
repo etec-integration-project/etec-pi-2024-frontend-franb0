@@ -89,3 +89,9 @@ header {
 .product button:hover {
     background-color: #8b6f59; /* Lighter brown */
 }
+
+.options {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
