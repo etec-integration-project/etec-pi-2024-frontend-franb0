@@ -192,6 +192,8 @@ function buyCart() {
         };
     });
 
+    console.log(products);
+
     fetch('/api/buy', {
         method: 'POST',
         headers: {
