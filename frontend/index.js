@@ -22,7 +22,7 @@ function fetchProducts() {
                         <p>Rating: ${rating}⭐</p>
                         <div class="options">
                         <button onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
-                        <button onclick="addRating('${product.id}')">Rate Product</button>
+                        <button onclick="addRating('${product.id}', '${product.name}')">Rate Product</button>
                         </div>
                     `;
     
@@ -50,8 +50,8 @@ function getProductRating(id) {
         });
 }
 
-function addRating(productId) {
-    const rating = parseInt(prompt("Please rate the product from 1 to 5:"));
+function addRating(productId, productName) {
+    const rating = parseInt(prompt(`Please rate ${productName} from 1 to 5:`));
     
     if (rating >= 1 && rating <= 5) {
         fetch(`${baseUrl}/rate/${productId}`, {
