@@ -85,6 +85,48 @@ function closeDialog(type) {
     dialog.close();
 }
 
+function logout() {
+    fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Logout failed:', error);
+    });
+}
+
+function login() {
+    fetch('/api/session-data')
+        .then(response => response.json())
+        .then(data => {
+            const username = data.name;
+            const userGreeting = document.getElementById('user-greeting');
+            const greetingMessage = document.createElement('p');
+            const logoutButton = document.createElement('button');
+            logoutButton.classList.add('auth-btn');
+            logoutButton.addEventListener('click', logout());
+            logoutButton.textContent = 'Logout';
+
+            if (username) {
+                greetingMessage.textContent = `${username}`;
+            }
+
+            userGreeting.appendChild(greetingMessage);
+            userGreeting.appendChild(logoutButton);
+        })
+        .catch(error => {
+            console.error("Error fetching session data:", error);
+        });
+}
+
 function submitForm(type) {
     const form = type === 'login' ? document.getElementById('loginForm') : (type === 'register' ? document.getElementById('registerForm') : document.getElementById('supportForm'));
     const formData = new FormData(form);
@@ -112,6 +154,7 @@ function submitForm(type) {
     .then(data => {
         alert(`${type.charAt(0).toUpperCase() + type.slice(1)} successful: ${JSON.stringify(data)}`);
         closeDialog(type);
+        login();
     })
     .catch(error => {
         alert('Error: ' + error.message);
