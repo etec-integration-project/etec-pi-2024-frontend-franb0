@@ -114,7 +114,7 @@ function login() {
             const logoutButton = document.createElement('button');
             logoutButton.classList.add('auth-btn');
             logoutButton.textContent = 'Logout';
-            logoutButton.addEventListener('click', logout());
+            logoutButton.addEventListener('click', logout);
 
             if (username) {
                 greetingMessage.textContent = `${username}`;
