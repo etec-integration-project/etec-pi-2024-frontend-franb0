@@ -96,6 +96,7 @@ function logout() {
     .then(data => {
         if (data.message) {
             alert(data.message);
+            location.reload();
         }
     })
     .catch(error => {
@@ -112,8 +113,8 @@ function login() {
             const greetingMessage = document.createElement('p');
             const logoutButton = document.createElement('button');
             logoutButton.classList.add('auth-btn');
-            logoutButton.addEventListener('click', logout());
             logoutButton.textContent = 'Logout';
+            logoutButton.addEventListener('click', logout());
 
             if (username) {
                 greetingMessage.textContent = `${username}`;
@@ -154,7 +155,9 @@ function submitForm(type) {
     .then(data => {
         alert(`${type.charAt(0).toUpperCase() + type.slice(1)} successful: ${JSON.stringify(data)}`);
         closeDialog(type);
-        login();
+        if (type === 'login') {
+            login();
+        }
     })
     .catch(error => {
         alert('Error: ' + error.message);
