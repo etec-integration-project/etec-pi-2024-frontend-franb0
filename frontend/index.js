@@ -177,3 +177,33 @@ function addToCart(productName, productPrice) {
     const newTotal = currentTotal + productPrice;
     cartTotal.textContent = newTotal.toFixed(2);
 }
+
+function buyCart() {
+    const products = {};
+    const listItems = document.querySelectorAll('#product-list li');
+
+    listItems.forEach((li, index) => {
+        const textContent = li.textContent;
+        const [productName, productPrice] = textContent.split(' - $');
+        
+        products[index + 1] = {
+            name: productName.trim(),
+            price: parseFloat(productPrice.trim())
+        };
+    });
+
+    fetch('/api/buy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(products)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Data sent successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error sending data:', error);
+    });
+}
