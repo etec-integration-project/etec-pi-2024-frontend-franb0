@@ -211,7 +211,7 @@ function buyCart() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Data sent successfully:', data);
+        alert('Data sent successfully:', data);
         alert(data.message);
     })
     .catch(error => {
