@@ -212,7 +212,7 @@ function buyCart() {
     .then(response => response.json())
     .then(data => {
         console.log('Data sent successfully:', data);
-        alert(data.content);
+        alert(data.message);
     })
     .catch(error => {
         console.error('Error sending data:', error);
