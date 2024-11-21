@@ -28,7 +28,6 @@ function fetchProducts() {
     
                     productsDiv.appendChild(productDiv);
                 });
-
             });
         })
         .catch(error => alert(error))
@@ -205,9 +204,49 @@ function buyCart() {
     .then(response => response.json())
     .then(data => {
         console.log('Data sent successfully:', data);
-        alert(data.content);
+
+        // Show success message on successful purchase
+        showSuccessMessage(data.content || "Purchase successful!");
     })
     .catch(error => {
         console.error('Error sending data:', error);
+        // Optionally show an error message
+        showErrorMessage('Error: ' + error.message);
     });
+}
+
+// Function to show a success message
+function showSuccessMessage(message) {
+    const messageContainer = document.getElementById('message-container');
+    
+    // Create success message element
+    const successMessage = document.createElement('div');
+    successMessage.classList.add('message', 'success');
+    successMessage.textContent = message;
+
+    // Append success message to the container
+    messageContainer.appendChild(successMessage);
+
+    // Optionally, remove the success message after a few seconds
+    setTimeout(() => {
+        successMessage.remove();
+    }, 5000); // Remove after 5 seconds (adjust as needed)
+}
+
+// Function to show an error message (optional)
+function showErrorMessage(message) {
+    const messageContainer = document.getElementById('message-container');
+    
+    // Create error message element
+    const errorMessage = document.createElement('div');
+    errorMessage.classList.add('message', 'error');
+    errorMessage.textContent = message;
+
+    // Append error message to the container
+    messageContainer.appendChild(errorMessage);
+
+    // Optionally, remove the error message after a few seconds
+    setTimeout(() => {
+        errorMessage.remove();
+    }, 5000); // Remove after 5 seconds (adjust as needed)
 }
