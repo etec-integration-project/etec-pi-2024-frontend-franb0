@@ -132,9 +132,7 @@ function login() {
 }
 
 function submitForm(type) {
-    const form = type === 'login' ? document.getElementById('loginForm') : 
-                 type === 'register' ? document.getElementById('registerForm') : 
-                 document.getElementById('supportForm');
+    const form = type === 'login' ? document.getElementById('loginForm') : (type === 'register' ? document.getElementById('registerForm') : document.getElementById('supportForm'));
     const formData = new FormData(form);
 
     const data = {};
@@ -142,9 +140,10 @@ function submitForm(type) {
         data[key] = value;
     });
 
+    
     const endpoint = type === 'login' ? `${baseUrl}/login` : 
-                     type === 'register' ? `${baseUrl}/register` : 
-                     `${baseUrl}/support`; // Fixed missing backticks
+    type === 'register' ? `${baseUrl}/register` : 
+    `${baseUrl}/support`;
 
     fetch(endpoint, {
         method: 'POST',
@@ -160,7 +159,7 @@ function submitForm(type) {
         return response.json();
     })
     .then(data => {
-        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} successful: ${JSON.stringify(data)}`); // Fixed missing backticks
+        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} successful: ${JSON.stringify(data)}`);
         closeDialog(type);
         if (type === 'login') {
             login();
