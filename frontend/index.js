@@ -168,7 +168,6 @@ function addToCart(productName, productPrice) {
     const cartTotal = document.getElementById('cart-total');
 
     const listItem = document.createElement('li');
-    listItem.classList.add('product-list-item');
     listItem.textContent = `${productName} - $${productPrice.toFixed(2)}`;
 
     cartItems.appendChild(listItem);
@@ -180,7 +179,7 @@ function addToCart(productName, productPrice) {
 
 function buyCart() {
     const products = {};
-    const listItems = document.querySelectorAll('.product-list-item');
+    const listItems = document.querySelectorAll('#product-list li');
 
     listItems.forEach((li, index) => {
         const textContent = li.textContent;
