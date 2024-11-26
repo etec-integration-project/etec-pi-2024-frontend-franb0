@@ -1,0 +1,39 @@
+services:
+  mysqldb:
+    image: mysql:8.0
+    volumes:
+      - ./data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=app
+    networks:
+      - franci-app-network
+
+  backend:
+    build: https://github.com/etec-integration-project/etec-pi-2024-backend-franb0.git
+    depends_on:
+      - mysqldb
+    environment:
+      - DATABASE_NAME=app
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_HOST=mysqldb
+    restart: always
+    networks:
+      - franci-app-network
+
+  proxy:
+    build:
+      context: https://github.com/etec-integration-project/etec-pi-2024-frontend-franb0.git
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - franci-app-network
+
+networks:
+  franci-app-network:
+    driver: bridge
