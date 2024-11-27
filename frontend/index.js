@@ -107,14 +107,125 @@ function logout() {
     });
 }
 
+function openCartDialog(cartId) {
+    const dialog = document.getElementById(cartId);
+    dialog.showModal();
+}
+
+function closeCartDialog(cartId) {
+    const dialog = document.getElementById(cartId);
+    dialog.close();
+}
+
+function showCarts(userId) {
+    fetch(`/api/carts/${userId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: {}
+    })
+        .then(response => response.json())
+        .then(carts => {
+            const cartsList = document.getElementById('cartsList');
+            
+            carts.forEach(cart => {
+                console.log(cart);
+
+                const cartLi = document.createElement('div');
+                const cartDialog = document.createElement('dialog');
+                cartDialog.setAttribute('id', `cart-${cart.id}`);
+
+                cartLi.innerHTML = `
+                    <hr>
+                    <h3>Cart id: ${cart.id}</h3>
+                    <p>Date of purchase: ${cart.date_time}</p>
+                    <button class="auth-btn" onclick='openCartDialog("cart-${cart.id}")'>Edit</button>
+                `;
+
+                console.log("Cart items raw: ", cart.content);
+
+                const cartItems = JSON.parse(cart.content);
+
+                console.log("Cart items parsed: ", cartItems);
+
+                cartDialog.innerHTML = `
+                    <form id="cartForm-${cart.id}" onsubmit="submitCartForm('cartForm-${cart.id}', '${cart.id}')">
+                        <h2>Purchase Details</h2>
+
+                        ${Object.entries(cartItems).map(([key, item]) => `
+                                <label for="${item.name}">${item.name} - $${item.price}</label>
+                                <span>Quantity:</span>
+                                <input type="number" value="${item.quantity}" id="cartForm-${cart.id}-${item.name.replace(/\s+/g, '_')}" name="${item.name}" required>
+                                <br>
+                            `).join("")}
+
+                        <button class="auth-btn" type="submit">Update</button>
+                        <button class="auth-btn" type="button" onclick="closeCartDialog('cart-${cart.id}')">Cancel</button>
+                    </form>
+                `;
+
+                cartsList.appendChild(cartLi);
+                cartsList.appendChild(cartDialog);
+            });
+        })
+        .catch(error => {
+            console.log("Error fetching carts: ", error)
+        });
+}
+
+function submitCartForm(cartFormId, cartId) {
+    event.preventDefault();
+    const cartForm = document.getElementById(cartFormId);
+    const cartLabels = cartForm.querySelectorAll('label');
+    const formData = {};
+
+    cartLabels.forEach((label, index) => {
+        const textContent = label.textContent;
+        const [productName, productPrice] = textContent.split(' - $');
+        const cartInput = cartForm.querySelector(`#${cartFormId}-${productName.replace(/\s+/g, '_')}`);
+        const price = parseInt(cartInput.value, 10);
+
+        if (price > 0) {
+            formData[index + 1] = {
+                name: productName.trim(),
+                price: parseFloat(productPrice.trim()),
+                quantity: price
+            };
+        }
+    });
+
+    fetch(`/api/update-cart/${cartId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        alert(data.content);
+    })
+    .catch(error => {
+        console.error('Error sending data:', error);
+    });
+}
+
 function login() {
     fetch('/api/session-data')
         .then(response => response.json())
         .then(data => {
             const username = data.name;
+            const userId = data.user_id;
             const userGreeting = document.getElementById('user-greeting');
             const greetingMessage = document.createElement('p');
             const logoutButton = document.createElement('button');
+            const cartsDiv = document.getElementById('userCarts');
+            cartsDiv.innerHTML = `
+                <h2>Past purchases</h2>
+                <div id="cartsList"></div>
+            `;
             logoutButton.classList.add('auth-btn');
             logoutButton.textContent = 'Logout';
             logoutButton.addEventListener('click', logout);
@@ -122,6 +233,8 @@ function login() {
             if (username) {
                 greetingMessage.textContent = `${username}`; // Fixed missing backticks
             }
+
+            showCarts(userId);
 
             userGreeting.appendChild(greetingMessage);
             userGreeting.appendChild(logoutButton);
@@ -183,18 +296,37 @@ function addToCart(productName, productPrice) {
 function buyCart() {
     const products = {};
     const listItems = document.querySelectorAll('.product-list-item');
+    const cartTotal = document.getElementById('cart-total');
+    const productCounts = {};
 
-    listItems.forEach((li, index) => {
+    listItems.forEach(li => {
+        const textContent = li.textContent;
+        const productName = textContent.split(' - $')[0].trim();
+
+        if (productCounts[productName]) {
+            productCounts[productName]++;
+            li.remove();
+        } else {
+            productCounts[productName] = 1;
+        }
+    });
+
+    const listItems2 = document.querySelectorAll('.product-list-item');
+
+    listItems2.forEach((li, index) => {
         const textContent = li.textContent;
         const [productName, productPrice] = textContent.split(' - $');
         
         products[index + 1] = {
             name: productName.trim(),
-            price: parseFloat(productPrice.trim())
+            price: parseFloat(productPrice.trim()),
+            quantity: productCounts[productName.trim()]
         };
+
+        li.remove();
     });
 
-    console.log(products);
+    cartTotal.textContent = 0.00;
 
     fetch('/api/buy', {
         method: 'POST',
