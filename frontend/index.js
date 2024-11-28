@@ -68,7 +68,7 @@ function addToDialogCart(formID, productString) {
     );
 
     if (hasText) {
-        const cartInput = cartForm.getElementById(`${formID}-${product.name.replace(/\s+/g, '_')}`);
+        const cartInput = cartForm.querySelector(`#${formID}-${product.name.replace(/\s+/g, '_')}`);
 
         console.log(cartInput);
 
