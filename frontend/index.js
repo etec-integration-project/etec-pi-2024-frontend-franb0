@@ -33,6 +33,54 @@ function fetchProducts() {
         .catch(error => alert(error));
 }
 
+function fetchCartProducts(cartID) {
+    fetch(`${baseUrl}/products`) // Fixed missing backticks
+        .then(response => response.json())
+        .then(products => {
+            const productsDiv = document.getElementById(`dialog-list-${cartID}`);
+
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+
+                productDiv.innerHTML = `
+                    <img src="${product.image_url}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p>Price: $${product.price.toFixed(2)}</p>
+                    <div class="options">
+                        <button onclick="addToDialogCart('cartForm-${cartID}', ${product})">Add to Cart</button>
+                    </div>
+                `; // Fixed missing backticks and corrected string formatting
+
+                productsDiv.appendChild(productDiv);
+            });
+        })
+        .catch(error => alert(error));
+}
+
+function addToDialogCart(formID, product) {
+    const cartForm = document.getElementById(formID);
+    const cartLabel = cartForm.querySelectorAll('label');
+
+    let hasText = Array.from(cartLabel).some(element => 
+        element.textContent.includes(product.name)
+    );
+
+    if (hasText) {
+        const cartInput = cartForm.getElementById(`${formID}-${product.name.replace(/\s+/g, '_')}`);
+
+        cartInput.value++;
+    } else {
+        const newDiv = document.createElement('div');
+
+        newDiv.innerHTML = `
+            <label for="${product.name}">${product.name} - $${product.price}</label>
+            <span>Quantity:</span>
+            <input type="number" value="1" id="${formID}-${product.name.replace(/\s+/g, '_')}" name="${product.name}" required>
+            <br>`;
+    }
+}
+
 function getProductRating(id) {
     return fetch(`${baseUrl}/rating/${id}`) // Fixed missing backticks
         .then(response => response.json())
@@ -152,18 +200,23 @@ function showCarts(userId) {
                 cartDialog.innerHTML = `
                     <form id="cartForm-${cart.id}" onsubmit="submitCartForm('cartForm-${cart.id}', '${cart.id}')">
                         <h2>Purchase Details</h2>
+                        
+                        <button class="auth-btn" type="submit">Update</button>
+                        <button class="auth-btn" type="button" onclick="closeCartDialog('cart-${cart.id}')">Cancel</button>
 
                         ${Object.entries(cartItems).map(([key, item]) => `
+                            <div>
                                 <label for="${item.name}">${item.name} - $${item.price}</label>
                                 <span>Quantity:</span>
                                 <input type="number" value="${item.quantity}" id="cartForm-${cart.id}-${item.name.replace(/\s+/g, '_')}" name="${item.name}" required>
                                 <br>
+                            </div>
                             `).join("")}
-
-                        <button class="auth-btn" type="submit">Update</button>
-                        <button class="auth-btn" type="button" onclick="closeCartDialog('cart-${cart.id}')">Cancel</button>
                     </form>
+                    <div id="dialog-list-${cart.id}"></div>
                 `;
+
+                fetchCartProducts(cart.id);
 
                 cartsList.appendChild(cartLi);
                 cartsList.appendChild(cartDialog);
