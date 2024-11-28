@@ -48,7 +48,7 @@ function fetchCartProducts(cartID) {
                     <h3>${product.name}</h3>
                     <p>Price: $${product.price.toFixed(2)}</p>
                     <div class="options">
-                        <button onclick="addToDialogCart('cartForm-${cartID}', ${product})">Add to Cart</button>
+                        <button onclick="addToDialogCart('cartForm-${cartID}', ${JSON.stringify(product)})">Add to Cart</button>
                     </div>
                 `; // Fixed missing backticks and corrected string formatting
 
@@ -58,9 +58,10 @@ function fetchCartProducts(cartID) {
         .catch(error => alert(error));
 }
 
-function addToDialogCart(formID, product) {
+function addToDialogCart(formID, productString) {
     const cartForm = document.getElementById(formID);
     const cartLabel = cartForm.querySelectorAll('label');
+    const product = JSON.parse(productString);
 
     let hasText = Array.from(cartLabel).some(element => 
         element.textContent.includes(product.name)
@@ -187,6 +188,7 @@ function showCarts(userId) {
                 const cartLi = document.createElement('div');
                 const cartDialog = document.createElement('dialog');
                 cartDialog.setAttribute('id', `cart-${cart.id}`);
+                cartDialog.style.minWidth = "50vw";
 
                 cartLi.innerHTML = `
                     <hr>
