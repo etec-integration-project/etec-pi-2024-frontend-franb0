@@ -48,7 +48,7 @@ function fetchCartProducts(cartID) {
                     <h3>${product.name}</h3>
                     <p>Price: $${product.price.toFixed(2)}</p>
                     <div class="options">
-                        <button onclick="addToDialogCart('cartForm-${cartID}', ${JSON.stringify(product)})">Add to Cart</button>
+                        <button onclick="addToDialogCart('cartForm-${cartID}', '${JSON.stringify(product)}')">Add to Cart</button>
                     </div>
                 `; // Fixed missing backticks and corrected string formatting
 
