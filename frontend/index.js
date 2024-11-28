@@ -69,7 +69,9 @@ function addToDialogCart(formID, product) {
     if (hasText) {
         const cartInput = cartForm.getElementById(`${formID}-${product.name.replace(/\s+/g, '_')}`);
 
-        cartInput.value++;
+        console.log(cartInput);
+
+        cartInput.value = cartInput.value + 1;
     } else {
         const newDiv = document.createElement('div');
 
@@ -78,6 +80,8 @@ function addToDialogCart(formID, product) {
             <span>Quantity:</span>
             <input type="number" value="1" id="${formID}-${product.name.replace(/\s+/g, '_')}" name="${product.name}" required>
             <br>`;
+
+        cartForm.appendChild(newDiv);
     }
 }
 
@@ -213,7 +217,7 @@ function showCarts(userId) {
                             </div>
                             `).join("")}
                     </form>
-                    <div id="dialog-list-${cart.id}"></div>
+                    <div class="product-list" id="dialog-list-${cart.id}"></div>
                 `;
 
                 fetchCartProducts(cart.id);
