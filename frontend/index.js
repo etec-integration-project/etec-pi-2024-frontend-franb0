@@ -70,9 +70,7 @@ function addToDialogCart(formID, productString) {
     if (hasText) {
         const cartInput = cartForm.querySelector(`#${formID}-${product.name.replace(/\s+/g, '_')}`);
 
-        console.log(cartInput);
-
-        cartInput.value = cartInput.value + 1;
+        cartInput.value = Number(cartInput.value) + 1;
     } else {
         const newDiv = document.createElement('div');
 
